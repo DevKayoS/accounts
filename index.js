@@ -29,6 +29,15 @@ function operation(){
     const action = answers['action'] //armazenando a resposta numa variavel 
     if(action === "Criar conta"){ //caso tenha escolhido criar uma conta irá chamar a função createAccount
       createAccount() //função sendo chamada para cirar conta
+    } else if(action === "Consultar saldo"){ //caso tenha escolhido a opção de consulta de saldo
+
+    } else if (action === "Depositar"){ // caso tenha escolhido a opção de depositar dinheiro na conta
+
+    } else if (action === "Sacar"){ // caso tenha escolhido a opção de sacar dinheiro da conta
+
+    } else if (action === "Sair"){ // caso usuário tenha escolhido sair da operação
+      console.log(chalk.bgBlue("Obrigado por usar nosso banco!")) //mensagem que irá aparecer para o usuário ao sair do programa
+      process.exit()
     }
 }).catch((err)=> console.log(err)) //catch para caso alguma coisa dê errado seja imprimido a mensagem de erro
 }
@@ -49,16 +58,17 @@ function buildAccount(){
   }]).then((answers)=> { //promise que vai ser usada após a execução da pergunta
     const acconutName = answers['accountName'] //variavel onde ficou armazenada o nome da conta
     
+
     console.info(acconutName) //imprimindo o nome da conta
 
     if(!fs.existsSync('accounts')){ //fazendo uma verificação se existe uma pasta criada com esse nome
       fs.mkdirSync('accounts') // caso não exista ela está sendo criada nessa linha
     } 
 
-    if(fs.existsSync(`acconts/${acconutName}.json`)){ // verificando se dentro da pasta accounts existe um arquivo com o nome da conta
+    if(fs.existsSync(`accounts/${acconutName}.json`)){ // verificando se dentro da pasta accounts existe um arquivo com o nome da conta
       console.log(chalk.bgRed.black('O nome da conta já existe!')) // imprimindo mensagem de erro caso exista essa conta
       buildAccount() //retornando para a função de builAccount para executar novamente o programa e escolher outro nome
-      return //para nao gerar um bug e ficar rodando infinito para encerrar o programa
+      //para nao gerar um bug e ficar rodando infinito para encerrar o programa
     }
 
     fs.writeFileSync(`accounts/${acconutName}.json`, `{"balance": 0}`, function(err){ //criando o arquivo json com o nome da conta, e inserindo o saldo da conta e uma função de erro
