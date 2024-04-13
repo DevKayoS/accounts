@@ -104,7 +104,7 @@ function deposit(){
       const amount = answers['amount'] //salvando a quantidade de dinheiro que o usuário deseja depositar
 
       //adicionando o valor
-      addAmount(accountName, )
+      addAmount(accountName, amount )
       operation()
     })
     .catch(err=>console.log(err))//pegando o erro e imprindo ele caso exista 
@@ -125,14 +125,25 @@ function checkAccount(accountName){
 
 //adicionando o valor dentro da conta do usuário
 function addAmount(accountName, amount){
-  const account = getAccount(accountName)
+  const accountData = getAccount(accountName)
 
-  if(!amount){
-    console.log(chalk.bgRed.black("Ocorreu um erro tente novamente mais tarde"))
-    return deposit()
+  if(!amount){ // verificando se o usuário enviou algum valor
+    console.log(chalk.bgRed.black("Ocorreu um erro tente novamente mais tarde")) //mensagem de erro
+    return deposit() // voltando para a ação de depositar
   }
 
-  accountData.balance = parseFloat(amount) + parseFloat(accountData.balance)
+  //nesse ponto aqui ja foi verificado se o valor existe 
+  accountData.balance = parseFloat(amount) + parseFloat(accountData.balance) //estou pegando o valor que tem na conta e somando com o valor que o usuário escolheu depositar isso acontece por accountData ser um json
+  
+  fs.writeFileSync( //usando fs para escrever num arquivo 
+   `accounts/${accountName}.json`, //pegando o arquivo que deve ser alterado
+    JSON.stringify(accountData), //convertendo o accountData em texto para o fs escrever no arquivo
+    function(err){ //chamando um callback para evidenciar um erro que pode ocorrer
+      console.log(err) 
+    }
+  )
+
+  console.log(chalk.green(`Foi depositado o valor de R$${amount} na sua conta`)) //mensagem de operação bem sucedida
 }
 
 // função para pegar uma conta
