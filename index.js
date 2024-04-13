@@ -30,7 +30,7 @@ function operation(){
     if(action === "Criar conta"){ //caso tenha escolhido criar uma conta irá chamar a função createAccount
       createAccount() //função sendo chamada para cirar conta
     } else if(action === "Consultar saldo"){ //caso tenha escolhido a opção de consulta de saldo
-
+      viewBalance()
     } else if (action === "Depositar"){ // caso tenha escolhido a opção de depositar dinheiro na conta
       deposit()
     } else if (action === "Sacar"){ // caso tenha escolhido a opção de sacar dinheiro da conta
@@ -154,4 +154,38 @@ function getAccount(accountName){
   })
 
   return JSON.parse(accountJSON) //o accountJSON estava lendo um arquivo entao estava vindo como texto mas com o JSON.parse ele esta convertendo o accountJSON para um JSON
+}
+
+function viewBalance(){
+
+  inquirer.prompt([{ //usando o inquirer para saber qual conta o usuário deseja saber o saldo
+    name: 'accountName', //nome da pergunta
+    message: 'Qual é o nome da conta que deseja ver o saldo?' //a pergunta em si
+  }])
+  .then((answers)=> { //quando o inquirer terminar é para fazer a seguinte execução
+    const accountName = answers['accountName'] //armazenando a resposta do inquirer em uma váriavel
+
+    //verificando se o usário enviou algum valor para o account name
+    if(!accountName){ 
+      console.log(chalk.bgRed.black("Por favor digite uma conta válida!"))
+      return viewBalance() //caso tenha voltado vazio volta para o viewBalance para iniciar de novo
+    }
+
+    //verificando se a conta existe
+    if(!checkAccount(accountName)){
+      console.log(chalk.bgRed.black("Essa conta não existe, por favor digite uma conta válida"))
+      return viewBalance() //caso nao exista volta para o viewbalance para tentar outra conta
+    }
+
+    const accountData = getAccount(accountName) //pegando os dados da conta com o getAccount passando como parametro o nome da conta que o usuário inseriu
+
+    const accountBalance = accountData.balance //pegando o saldo da conta que esta em accountData 
+
+    console.log(chalk.bgGreen(`Você tem um saldo de: R$${accountBalance}`)) //colocando em tela o saldo da conta
+
+    operation() //retornando para as operações
+  })
+  .catch(err => console.log(err)) //callback para possiveis erros
+
+  
 }
