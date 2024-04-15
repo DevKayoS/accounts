@@ -213,6 +213,12 @@ function withdraw(){
         console.log(chalk.bgRed.black('Insira um valor válido!!'))
         return withdraw()
       }
+
+      //verificação para saber se tem saldo disponivel
+      if(accountData.balance < amount){ 
+        console.log(chalk.bgRed.black("Saldo indisponível para resgate"))
+        return withdraw()
+      }
       accountData.balance = parseFloat(accountData.balance) - parseFloat(amount) //fazendo a subtração do valor do usuário
 
       fs.writeFileSync( //escrevendo no arquivo json
