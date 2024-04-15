@@ -34,7 +34,7 @@ function operation(){
     } else if (action === "Depositar"){ // caso tenha escolhido a opção de depositar dinheiro na conta
       deposit()
     } else if (action === "Sacar"){ // caso tenha escolhido a opção de sacar dinheiro da conta
-
+      withdraw()
     } else if (action === "Sair"){ // caso usuário tenha escolhido sair da operação
       console.log(chalk.bgBlue("Obrigado por usar nosso banco!")) //mensagem que irá aparecer para o usuário ao sair do programa
       process.exit() //comando para finalizar o programa
@@ -173,7 +173,6 @@ function viewBalance(){
 
     //verificando se a conta existe
     if(!checkAccount(accountName)){
-      console.log(chalk.bgRed.black("Essa conta não existe, por favor digite uma conta válida"))
       return viewBalance() //caso nao exista volta para o viewbalance para tentar outra conta
     }
 
@@ -186,6 +185,48 @@ function viewBalance(){
     operation() //retornando para as operações
   })
   .catch(err => console.log(err)) //callback para possiveis erros
+}
 
-  
+function withdraw(){
+  inquirer.prompt([{
+    name: 'accountName',
+    message: 'Qual o nome da conta que deseja sacar?'
+  }])
+  .then((answers)=>{
+    const acconutName = answers['accountName'] //salvando em uma variavel o nome da conta
+    if(!acconutName){ //verificação para saber se foi enviado algum nome 
+      console.log(chalk.bgRed.black("Insira o nome de uma conta válida!")) //mensagem de erro caso nao tenha sido enviado algum valor
+      return withdraw()
+    }
+    if(!checkAccount(acconutName)){ //verificando se a conta existe
+      return withdraw() //caso ela nao exista irá retornar para o withdraw
+    }
+
+    const accountData = getAccount(acconutName)
+    inquirer.prompt([{ // iniciando a pergunta para sacar o dinheiro
+      name: 'amount', 
+      message: 'Qual o valor deseja sacar?'
+    }])
+    .then((answers)=>{ 
+      const amount = answers['amount'] //salvando a resposta em uma váriavel
+      if(!amount){ //verificando se foi passado algum valor para dentro da resposta
+        console.log(chalk.bgRed.black('Insira um valor válido!!'))
+        return withdraw()
+      }
+      accountData.balance = parseFloat(accountData.balance) - parseFloat(amount) //fazendo a subtração do valor do usuário
+
+      fs.writeFileSync( //escrevendo no arquivo json
+        `accounts/${acconutName}.json`, // pasta onde eu quero sacar
+        JSON.stringify(accountData), //atualizando os dados da conta
+        function(err){ // callback caso exista um erro
+          console.log(err) //imprimindo esse erro
+        }
+      )
+      console.log(chalk.bgBlue(`Saque realizado com sucesso! Saldo atual: R$${accountData.balance}`))
+      operation() //voltando para as operações após finalizar o saque
+    })
+    .catch(err=>console.log(err)) 
+
+  })
+  .catch(err=>console.log(err))
 }
