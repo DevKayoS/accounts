@@ -3,7 +3,12 @@
 
  ## Como rodar?
 
-  Ao clonar o repositório 
+  Ao clonar o repositório  e instalar as dependencias com:
+  `
+  npm install
+  `
+  Use o comando: 
+
  ```
   
   npm start
